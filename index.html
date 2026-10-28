@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1d5fd1">
+<meta name="description" content="성북구·종로구 동주민센터 모집 공고를 한곳에서">
+<title>성북구·종로구 모집정보</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="header-top">
+      <div class="brand">
+        <h1 id="title">성북구·종로구 모집정보</h1>
+        <button class="region-chip" id="btn-region">📍 전체 지역 ▾</button>
+      </div>
+      <button class="icon-btn" id="btn-search" title="검색" aria-label="검색">🔍</button>
+      <button class="icon-btn" id="btn-refresh" title="새로고침" aria-label="새로고침">🔄</button>
+    </div>
+    <div class="search-row" id="search-row" hidden>
+      <input class="search" id="search" type="search" placeholder="제목·동 이름으로 검색">
+    </div>
+    <nav class="tabs" id="tabs" data-for="list"></nav>
+  </header>
+
+  <div class="sample-bar" id="sample-bar" hidden></div>
+
+  <!-- 홈: 요약 + 이번 주 마감 + 새 공고 + 분류 -->
+  <section class="view" id="view-home">
+    <div class="stats" id="home-stats"></div>
+    <div class="block">
+      <div class="block-head"><h2>이번 주 마감</h2><button class="more" data-go="list" data-sort="deadline">마감임박순 전체 ›</button></div>
+      <div class="list" id="home-week"></div>
+    </div>
+    <div class="block">
+      <div class="block-head"><h2>새로 올라온 공고</h2><button class="more" data-go="list" data-sort="latest">최신순 전체 ›</button></div>
+      <div class="list" id="home-new"></div>
+    </div>
+    <div class="block">
+      <div class="block-head"><h2>분류별 보기</h2></div>
+      <div class="cat-grid" id="home-cats"></div>
+    </div>
+  </section>
+
+  <!-- 목록 -->
+  <section class="view" id="view-list" hidden>
+    <div class="toolbar">
+      <h2>접수 중</h2>
+      <span class="meta" id="meta"></span>
+      <select id="sort" aria-label="정렬">
+        <option value="latest">최신순</option>
+        <option value="deadline">마감임박순</option>
+      </select>
+    </div>
+    <main class="list" id="list"><div class="loading-msg">불러오는 중…</div></main>
+    <button class="closed-toggle" id="closed-toggle" hidden></button>
+    <div class="list closed" id="closed-list" hidden></div>
+  </section>
+
+  <!-- 달력: 마감일 기준 -->
+  <section class="view" id="view-cal" hidden>
+    <div class="cal-head">
+      <button class="icon-btn" id="cal-prev" aria-label="이전 달">‹</button>
+      <h2 id="cal-title"></h2>
+      <button class="icon-btn" id="cal-next" aria-label="다음 달">›</button>
+    </div>
+    <div class="cal-legend"><span><i class="dot exact"></i>공고에 적힌 마감일</span><span><i class="dot est"></i>추정 마감일 (등록 후 30일)</span></div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div class="block">
+      <div class="block-head"><h2 id="cal-day-title"></h2></div>
+      <div class="list" id="cal-list"></div>
+    </div>
+  </section>
+
+  <!-- 설정 -->
+  <section class="view" id="view-set" hidden>
+    <div class="set-group">
+      <h3>화면</h3>
+      <div class="set-row"><span>시작 화면</span>
+        <div class="seg" data-pref="start"><button data-v="home">홈</button><button data-v="list">목록</button><button data-v="cal">달력</button></div></div>
+      <div class="set-row"><span>화면 모드</span>
+        <div class="seg" data-pref="theme"><button data-v="system">자동</button><button data-v="light">밝게</button><button data-v="dark">어둡게</button></div></div>
+      <div class="set-row"><span>글자 크기</span>
+        <div class="seg" data-pref="size"><button data-v="normal">보통</button><button data-v="large">크게</button><button data-v="xlarge">아주 크게</button></div></div>
+      <p class="set-note">자동: 휴대폰의 밝게·어둡게 설정을 따릅니다.</p>
+    </div>
+    <div class="set-group">
+      <h3>공고</h3>
+      <button class="set-row link" id="set-region"><span>내 지역</span><b id="set-region-val"></b></button>
+      <div class="set-row"><span>목록 정렬</span>
+        <div class="seg" data-pref="sort"><button data-v="latest">최신순</button><button data-v="deadline">마감임박순</button></div></div>
+    </div>
+    <div class="set-group" id="set-install-group" hidden>
+      <h3>앱 설치</h3>
+      <button class="set-row link" id="btn-install"><span>홈 화면에 앱으로 설치</span><b>설치 ›</b></button>
+    </div>
+    <div class="set-group">
+      <h3>앱 정보</h3>
+      <div class="set-row"><span>데이터 업데이트</span><b id="info-updated">-</b></div>
+      <div class="set-row"><span>공고 수</span><b id="info-count">-</b></div>
+      <div class="set-row"><span>수집 지역</span><b id="info-gu">-</b></div>
+      <div class="set-row"><span>출처</span><b>각 구청 동주민센터 공지</b></div>
+      <div class="set-row"><span>버전</span><b id="info-ver">-</b></div>
+      <p class="set-note">공고는 하루 3번(09·13·17시) 구청 홈페이지에서 모아 옵니다. AI 요약은 공고 원문을 자동으로 정리한 것이라 틀릴 수 있으니, 지원 전 원문을 꼭 확인하세요. 마감일을 공고에서 찾지 못하면 등록일로부터 30일을 '추정 마감일'로 표시합니다.</p>
+    </div>
+  </section>
+</div>
+
+<nav class="bottom-nav" id="bottom-nav">
+  <button data-view="home" class="active"><span>🏠</span>홈</button>
+  <button data-view="list"><span>📋</span>목록</button>
+  <button data-view="cal"><span>📅</span>달력</button>
+  <button data-view="set"><span>⚙️</span>설정</button>
+</nav>
+
+<!-- 동 선택 -->
+<div class="sheet-wrap" id="dong-modal">
+  <div class="sheet">
+    <div class="grabber"></div>
+    <div class="sheet-head"><h2>📍 지역 선택</h2><div class="sub">선택하지 않으면 전체 지역을 봅니다</div></div>
+    <div class="sheet-body">
+      <div class="dong-tools">
+        <button class="btn" id="dong-all">전체 선택</button>
+        <button class="btn" id="dong-none">전체 해제</button>
+      </div>
+      <div id="dong-groups"></div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn" id="dong-cancel">취소</button>
+      <button class="btn primary" id="dong-apply">적용</button>
+    </div>
+  </div>
+</div>
+
+<!-- 공고 상세 -->
+<div class="sheet-wrap" id="detail-modal">
+  <div class="sheet tall">
+    <div class="grabber"></div>
+    <div class="sheet-head"><h2 id="d-title"></h2><div class="sub" id="d-sub"></div></div>
+    <div class="sheet-body" id="d-body"></div>
+    <div class="sheet-foot">
+      <button class="btn" id="d-close">닫기</button>
+      <a class="btn primary" id="d-link" target="_blank" rel="noopener">원문 보기</a>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="js/ui.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
